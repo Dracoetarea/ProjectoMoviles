@@ -3,14 +3,22 @@ using System.Collections;
 
 public class ShootController : MonoBehaviour
 {
+    [Header("Disparo")]
     public GameObject bulletPrefab;
     public Transform shootPoint;
     public float shootCooldown = 0.5f;
     private float nextFireTime = 0f;
-    private CharacterLife vidaPersonaje;
 
+    private CharacterLife vidaPersonaje;
     private Animator animator;
     private PlayerController controlJugador;
+
+    [Header("Sprites")]
+    public Sprite nuevoSpriteBala;
+    private bool spriteCambiado = false;
+
+    public AudioSource audioSource;
+    public AudioClip disparoClip;
 
     public ShootController(PlayerController playerController)
     {
@@ -37,13 +45,26 @@ public class ShootController : MonoBehaviour
     {
         GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
 
+        if (spriteCambiado && nuevoSpriteBala != null)
+        {
+            SpriteRenderer sr = bullet.GetComponent<SpriteRenderer>();
+            if (sr != null)
+            {
+                sr.sprite = nuevoSpriteBala;
+            }
+        }
+
         BulletController bulletController = bullet.GetComponent<BulletController>();
         if (bulletController != null)
         {
             bulletController.controlJugador = controlJugador;
         }
 
-        // Desactivar movimiento y activar animación de disparo
+        if (disparoClip != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(disparoClip);
+        }
+
         if (animator != null && controlJugador != null)
         {
             animator.SetBool("isShooting", true);
@@ -58,5 +79,11 @@ public class ShootController : MonoBehaviour
         {
             animator.SetBool("isShooting", false);
         }
+    }
+
+    public void CambiarSpriteDeBala()
+    {
+        spriteCambiado = true;
+        Debug.Log("Sprite de bala cambiado correctamente.");
     }
 }

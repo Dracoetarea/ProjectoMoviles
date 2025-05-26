@@ -21,16 +21,22 @@ public class CorazonesUI : MonoBehaviour
 
     private void cambiarCorazones(int vidaActual)
     {
-        if (!listaCorazones.Any())
+        // Si la cantidad de vida actual supera los corazones existentes, crea mas
+        if (vidaActual > listaCorazones.Count)
         {
-            CrearCorazones(vidaActual);
+            int cantidadACrear = vidaActual - listaCorazones.Count;
 
+            for (int i = 0; i < cantidadACrear; i++)
+            {
+                GameObject nuevoCorazon = Instantiate(corazonPrefab, transform);
+                listaCorazones.Add(nuevoCorazon.GetComponent<Image>());
+            }
         }
-        else
-        {
-            CambiarVida(vidaActual);
-        }
+
+        // Actualiza los sprites según la vida actual
+        CambiarVida(vidaActual);
     }
+
 
 
     private void CrearCorazones(int cantidadVidaMaxima)

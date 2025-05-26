@@ -17,6 +17,7 @@ public class ShopController : MonoBehaviour
     public CharacterLife playerLife;
 
     bool playerInRange = false;
+    CoinManager coinManager;
 
     void Start()
     {
@@ -26,22 +27,14 @@ public class ShopController : MonoBehaviour
 
     void Update()
     {
-        void Update()
-        {
-            if (playerInRange && Input.GetKeyDown(KeyCode.E))
-            {
-                ToggleShop();
-            }
-
-            if (shopMenu.activeSelf && Input.GetKeyDown(KeyCode.B))
-            {
-                BuyHearts();
-            }
-        }
-
         if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
             ToggleShop();
+        }
+
+        if (shopMenu.activeSelf && Input.GetKeyDown(KeyCode.B))
+        {
+            BuyHearts();
         }
     }
 
@@ -66,8 +59,7 @@ public class ShopController : MonoBehaviour
         int balance = CoinManager.instance.coins;
         if (balance >= heartCost)
         {
-            CoinManager.instance.coins -= heartCost;
-            CoinManager.instance.UpdateCoinUI(); 
+            CoinManager.instance.SpendCoins(heartCost);
 
             playerLife.AddHearts(heartValue);
         }

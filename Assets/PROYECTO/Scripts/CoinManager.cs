@@ -16,19 +16,20 @@ public class CoinManager : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject); // Evita duplicados si ya existe uno
+            Destroy(gameObject);
         }
     }
 
-    private void Start()
+    void Start()
     {
-        if (coins == 0)
+        if (coinText == null)
         {
-            coins = PlayerPrefs.GetInt("PlayerCoins", 0);
+            coinText = FindObjectOfType<TextMeshProUGUI>(); 
         }
 
-        UpdateCoinUI();
+        LoadCoinsFromPrefs();
     }
+
 
 
     public void AddCoin()
@@ -41,7 +42,8 @@ public class CoinManager : MonoBehaviour
 
     public void UpdateCoinUI()
     {
-        coinText.text = coins.ToString();
+        if (coinText != null)
+            coinText.text = coins.ToString();
     }
 
     public void ResetCoins()
@@ -51,4 +53,24 @@ public class CoinManager : MonoBehaviour
         PlayerPrefs.Save();
         UpdateCoinUI();
     }
+
+    public void SaveCoinsToPrefs()
+    {
+        PlayerPrefs.SetInt("PlayerCoins", coins);
+        PlayerPrefs.Save();
+    }
+
+    public void SpendCoins(int amount)
+    {
+        coins -= amount;
+        PlayerPrefs.SetInt("PlayerCoins", coins);
+        PlayerPrefs.Save();
+        UpdateCoinUI();
+    }
+    public void LoadCoinsFromPrefs()
+    {
+        coins = PlayerPrefs.GetInt("PlayerCoins", 0);
+        UpdateCoinUI();
+    }
+
 }

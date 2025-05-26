@@ -21,6 +21,23 @@ public class Spawner : MonoBehaviour
     {
         int index = Random.Range(0, spawnPoints.Length);
         Transform spawnPoint = spawnPoints[index];
-        Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+
+        GameObject nuevo = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
+
+        EnemyController ec = nuevo.GetComponent<EnemyController>();
+        if (ec != null)
+        {
+            EnemyManager manager = FindObjectOfType<EnemyManager>();
+            if (manager != null && manager.EsEspecial(enemyPrefab))
+            {
+                ec.vida = 2;
+            }
+        }
+    }
+
+    public void DetenerSpawn()
+    {
+        CancelInvoke("SpawnEnemy");
+        spawnActivo = false;
     }
 }

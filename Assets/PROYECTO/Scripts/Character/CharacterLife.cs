@@ -3,27 +3,38 @@ using UnityEngine.Events;
 using TMPro;
 using System.Collections;
 using UnityEngine.SceneManagement;
-using System;
-using UnityEngine.EventSystems;
-using JetBrains.Annotations;
 
 public class CharacterLife : MonoBehaviour
 {
+    [Header("Vida")]
     public int vidaActual;
     public int vidaMaxima;
     public UnityEvent<int> cambioVida;
+
+    [Header("UI y Menu")]
     public GameObject HasMuertoPanel;
     public TextMeshProUGUI HasMuertoTexto;
     public float fadeDuration = 3f;
     public GameObject MenuMuerte;
     public GameObject MenuPrincipal;
-    public Boolean jugando = false;
     public GameObject imagen1;
     public GameObject imagen2;
+    public TextMeshProUGUI puntuacionTexto;
+
+    [Header("Inmortalidad")]
+    public float duracionInmortalidad = 1f;
+
+    [Header("Otros")]
+    public bool jugando = false;
     public Spawner[] spawners;
 
-    private bool juegoIniciado = false; // Bandera para controlar el inicio del juego.
-    private MonoBehaviour[] componentesAdesactivar; // Componentes a desactivar al inicio
+    private bool juegoIniciado = false;
+    private bool esInvulnerable = false;
+    private MonoBehaviour[] componentesAdesactivar;
+    public GameObject MenuOpciones;
+    public AudioSource gameOverAudioSource;
+    public AudioSource musicaFondoAudioSource;
+    public AudioSource hitAudioSource;
 
     void Start()
     {
@@ -33,38 +44,48 @@ public class CharacterLife : MonoBehaviour
 
         componentesAdesactivar = GetComponents<MonoBehaviour>();
         DesactivarComponentesJuego();
+
+        if (PlayerPrefs.HasKey("VidaActual"))
+        {
+            vidaActual = PlayerPrefs.GetInt("VidaActual");
+        }
+
+        CoinManager.instance?.LoadCoinsFromPrefs();
+        ScoreManager.instance?.ResetScore();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (juegoIniciado)
+        if (juegoIniciado && !esInvulnerable)
         {
-            Debug.Log("Colisión con: " + other.name);
             if (other.CompareTag("Enemigo"))
             {
+                hitAudioSource.Play();
                 recibirDaño(1);
+                StartCoroutine(InmortalidadTemporal());
             }
         }
     }
 
     public void recibirDaño(int cantidadDaño)
     {
-        if (juegoIniciado) // Solo recibir daño si el juego ha comenzado
+        if (juegoIniciado)
         {
             int vidaTemporal = vidaActual - cantidadDaño;
-
-            if (vidaTemporal < 0)
-            {
-                vidaActual = 0;
-            }
-            else
-            {
-                vidaActual = vidaTemporal;
-            }
+            vidaActual = Mathf.Max(vidaTemporal, 0);
             cambioVida.Invoke(vidaActual);
 
             if (vidaActual <= 0)
             {
+                if (musicaFondoAudioSource != null && musicaFondoAudioSource.isPlaying)
+                {
+                    musicaFondoAudioSource.Stop();
+                }
+
+                if (gameOverAudioSource != null)
+                {
+                    gameOverAudioSource.Play();
+                }
                 StartCoroutine(MostrarMenuMuerte());
                 GetComponent<Renderer>().enabled = false;
                 GetComponent<Collider2D>().enabled = false;
@@ -73,14 +94,44 @@ public class CharacterLife : MonoBehaviour
         }
     }
 
+    private IEnumerator InmortalidadTemporal()
+    {
+        esInvulnerable = true;
+
+        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
+        float tiempoTranscurrido = 0f;
+        float intervaloParpadeo = 0.1f;
+
+        while (tiempoTranscurrido < duracionInmortalidad)
+        {
+            if (renderer != null)
+                renderer.enabled = !renderer.enabled;
+
+            yield return new WaitForSeconds(intervaloParpadeo);
+            tiempoTranscurrido += intervaloParpadeo;
+        }
+
+        if (renderer != null)
+            renderer.enabled = true; 
+
+        esInvulnerable = false;
+    }
+
+
     private IEnumerator MostrarMenuMuerte()
     {
         HasMuertoPanel.SetActive(true);
         StartCoroutine(FadeOutText());
         yield return new WaitForSeconds(fadeDuration);
         HasMuertoPanel.SetActive(false);
+        if (puntuacionTexto != null)
+        {
+            int puntos = ScoreManager.instance != null ? ScoreManager.instance.currentScore : 0;
+            puntuacionTexto.text += puntos.ToString();
+        }
         MenuMuerte.SetActive(true);
     }
+
     private IEnumerator FadeOutText()
     {
         Color originalColor = HasMuertoTexto.color;
@@ -98,7 +149,9 @@ public class CharacterLife : MonoBehaviour
     {
         juegoIniciado = false;
         jugando = false;
+        CoinManager.instance?.LoadCoinsFromPrefs();
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        ScoreManager.instance?.ResetScore();
     }
 
     public void SalirJuegoMuerte()
@@ -116,8 +169,8 @@ public class CharacterLife : MonoBehaviour
     public void Jugar()
     {
         MenuPrincipal.SetActive(false);
-        GetComponent<Renderer>().enabled = true; // Activar el renderizador
-        juegoIniciado = true; // Marca el juego como iniciado.
+        GetComponent<Renderer>().enabled = true;
+        juegoIniciado = true;
         ActivarComponentesJuego();
         cambioVida.Invoke(vidaActual);
         imagen1.SetActive(false);
@@ -127,17 +180,17 @@ public class CharacterLife : MonoBehaviour
 
     public void Opciones()
     {
-        Debug.Log("Opciones del juego");
+        if (MenuOpciones != null)
+        {
+            MenuOpciones.SetActive(true);
+        }
     }
+
     public void SalirJuegoPrincipal()
     {
-        Debug.Log("Salir del juego");
         Application.Quit();
     }
-    public void UnaFuncionQueNoHagaNada(int vida)
-    {
 
-    }
     private void DesactivarComponentesJuego()
     {
         foreach (MonoBehaviour componente in componentesAdesactivar)
@@ -148,6 +201,7 @@ public class CharacterLife : MonoBehaviour
             }
         }
     }
+
     private void ActivarComponentesJuego()
     {
         foreach (MonoBehaviour componente in componentesAdesactivar)
@@ -159,6 +213,15 @@ public class CharacterLife : MonoBehaviour
     public void AddHearts(int amount)
     {
         vidaActual = Mathf.Min(vidaActual + amount, vidaMaxima);
+        PlayerPrefs.SetInt("VidaActual", vidaActual);
+        PlayerPrefs.Save();
         cambioVida.Invoke(vidaActual);
+    }
+    public void CerrarOpciones()
+    {
+        if (MenuOpciones != null)
+        {
+            MenuOpciones.SetActive(false);
+        }
     }
 }

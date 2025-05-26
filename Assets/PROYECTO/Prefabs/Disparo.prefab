@@ -153,6 +153,9 @@ MonoBehaviour:
   delayBeforeDestroy: 0
   controlJugador: {fileID: 0}
   coinPrefab: {fileID: 2438623639208424074, guid: efe148e7e5669da418046f38cda79e65, type: 3}
+  enemigosEspeciales:
+  - {fileID: 8433116982979186280, guid: 5948abc234a3ea041820c7b2f4d20761, type: 3}
+  - {fileID: 8433116982979186280, guid: f2c3fe1b2d6d47c4ca8da155175db4c0, type: 3}
 --- !u!50 &3860117660725197210
 Rigidbody2D:
   serializedVersion: 5

@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public class BulletController : MonoBehaviour
 {
     public float speed = 10f;
@@ -33,10 +32,22 @@ public class BulletController : MonoBehaviour
 
             TryDropCoin(spawnPosition);
 
-            EnemyManager manager = FindObjectOfType<EnemyManager>();
-            Destroy(collision.gameObject); 
+            EnemyController enemigo = collision.gameObject.GetComponent<EnemyController>();
+            if (enemigo != null)
+            {
+                int daño = 1;
+                EnemyManager shoot = FindObjectOfType<EnemyManager>();
+                if (shoot != null)
+                {
+                    daño = shoot.ObtenerDaño();
+                }
+
+                enemigo.RecibirDaño(daño);
+            }
+
             Destroy(gameObject);
 
+            EnemyManager manager = FindObjectOfType<EnemyManager>();
             if (manager != null) manager.EnemigoEliminado();
         }
         else if (collision.gameObject.CompareTag("pared") || collision.gameObject.CompareTag("Suelo"))
@@ -51,7 +62,7 @@ public class BulletController : MonoBehaviour
 
         if (chance <= 0.5f)
         {
-            GameObject newCoin = Instantiate(coinPrefab, position, Quaternion.identity);
+            Instantiate(coinPrefab, position, Quaternion.identity);
         }
     }
 }
