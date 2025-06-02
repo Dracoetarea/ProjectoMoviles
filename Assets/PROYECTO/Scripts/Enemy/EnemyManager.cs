@@ -23,6 +23,7 @@ public class EnemyManager : MonoBehaviour
 
     public void EnemigoEliminado()
     {
+        StatsManager.instance?.RegistrarEnemigoEliminado();
         enemigosEliminados++;
 
         if (enemigosEliminados % 10 == 0)

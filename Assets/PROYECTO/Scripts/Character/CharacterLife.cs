@@ -35,6 +35,8 @@ public class CharacterLife : MonoBehaviour
     public AudioSource gameOverAudioSource;
     public AudioSource musicaFondoAudioSource;
     public AudioSource hitAudioSource;
+    public GameObject MenuStats;
+    public TextMeshProUGUI textoStats;
 
     void Start()
     {
@@ -128,6 +130,7 @@ public class CharacterLife : MonoBehaviour
         {
             int puntos = ScoreManager.instance != null ? ScoreManager.instance.currentScore : 0;
             puntuacionTexto.text += puntos.ToString();
+            StatsManager.instance?.RegistrarPuntuacion(puntos);
         }
         MenuMuerte.SetActive(true);
     }
@@ -224,4 +227,23 @@ public class CharacterLife : MonoBehaviour
             MenuOpciones.SetActive(false);
         }
     }
+
+    public void MostrarStats()
+    {
+        if (MenuStats != null && textoStats != null)
+        {
+            StatsManager stats = StatsManager.instance;
+            textoStats.text = $"DISPAROS: {stats.disparosRealizados}\nELIMINADOS: {stats.enemigosEliminados}\nMAYOR PTS: {stats.puntuacionMaxima}";
+            MenuStats.SetActive(true);
+        }
+    }
+
+    public void CerrarStats()
+    {
+        if (MenuStats != null)
+        {
+            MenuStats.SetActive(false);
+        }
+    }
+
 }

@@ -17,6 +17,7 @@ public class BulletController : MonoBehaviour
         rb.linearVelocity = direction * speed;
 
         Invoke("EnableCollision", delayBeforeDestroy);
+        StatsManager.instance?.RegistrarDisparo();
     }
 
     private void EnableCollision()
