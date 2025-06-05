@@ -75,3 +75,5 @@ crashlytics-build.properties
 # Ignore Google API key files to prevent accidental commits
 /Assets/GoogleService-Info.plist
 /Assets/GoogleService-Info.plist.meta
+/Assets/google-services.json
+/Assets/google-services.json.meta
