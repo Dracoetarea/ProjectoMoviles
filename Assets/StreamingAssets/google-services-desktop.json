@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "754632967417",
+    "firebase_url": "https://proyectounityshadetrigger-default-rtdb.firebaseio.com",
+    "project_id": "proyectounityshadetrigger",
+    "storage_bucket": "proyectounityshadetrigger.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:754632967417:android:2dc48b21871de4e2a00e28",
+        "android_client_info": {
+          "package_name": "com.dracoetarea.shadetrigger"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiD820z6UrQBGnUDapTwnwq-ntaiHqTKk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

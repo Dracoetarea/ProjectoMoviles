@@ -1,9 +1,6 @@
-using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
 public class CorazonesUI : MonoBehaviour
 {

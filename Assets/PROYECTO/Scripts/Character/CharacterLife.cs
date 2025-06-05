@@ -132,6 +132,12 @@ public class CharacterLife : MonoBehaviour
             puntuacionTexto.text += puntos.ToString();
             StatsManager.instance?.RegistrarPuntuacion(puntos);
         }
+        string userUID = FirebaseManager.instance.GetUserUID();
+        int coins = CoinManager.instance != null ? CoinManager.instance.GetCoins() : 0;
+        int score = ScoreManager.instance != null ? ScoreManager.instance.currentScore : 0;
+        Debug.Log($"Guardando stats en Firebase: {userUID}, {coins}, {score}");
+
+        FirebaseManager.instance.SavePlayerStats(userUID, coins, score);
         MenuMuerte.SetActive(true);
     }
 

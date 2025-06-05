@@ -16,7 +16,7 @@ public class EnemyController : MonoBehaviour
         animator = GetComponent<Animator>();
         muerteAudio = GetComponent<AudioSource>();
 
-        EnemyManager manager = FindObjectOfType<EnemyManager>();
+        EnemyManager manager = Object.FindFirstObjectByType<EnemyManager>();
         if (manager != null) speed += manager.ObtenerVelocidadAcumulada();
 
         cf = (CharacterLife)FindFirstObjectByType(typeof(CharacterLife));

@@ -6,7 +6,6 @@ public class CoinManager : MonoBehaviour
     public static CoinManager instance;
     public int coins = 0;
     public TextMeshProUGUI coinText;
-
     private void Awake()
     {
         if (instance == null)
@@ -24,7 +23,8 @@ public class CoinManager : MonoBehaviour
     {
         if (coinText == null)
         {
-            coinText = FindObjectOfType<TextMeshProUGUI>(); 
+            coinText = Object.FindFirstObjectByType<TextMeshProUGUI>();
+
         }
 
         LoadCoinsFromPrefs();
@@ -73,4 +73,8 @@ public class CoinManager : MonoBehaviour
         UpdateCoinUI();
     }
 
+    public int GetCoins()
+    {
+        return coins;
+    }
 }

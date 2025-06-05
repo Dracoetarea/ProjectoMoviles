@@ -10,7 +10,7 @@ public class BulletController : MonoBehaviour
     void Start()
     {
         if (rb == null) rb = GetComponent<Rigidbody2D>();
-        if (controlJugador == null) controlJugador = FindObjectOfType<PlayerController>();
+        if (controlJugador == null) controlJugador = Object.FindFirstObjectByType<PlayerController>();
 
         rb.gravityScale = 0;
         Vector2 direction = controlJugador.mirandoDerecha ? Vector2.right : Vector2.left;
@@ -37,7 +37,7 @@ public class BulletController : MonoBehaviour
             if (enemigo != null)
             {
                 int daño = 1;
-                EnemyManager shoot = FindObjectOfType<EnemyManager>();
+                EnemyManager shoot = Object.FindFirstObjectByType<EnemyManager>();
                 if (shoot != null)
                 {
                     daño = shoot.ObtenerDaño();
@@ -48,7 +48,7 @@ public class BulletController : MonoBehaviour
 
             Destroy(gameObject);
 
-            EnemyManager manager = FindObjectOfType<EnemyManager>();
+            EnemyManager manager = Object.FindFirstObjectByType<EnemyManager>();
             if (manager != null) manager.EnemigoEliminado();
         }
         else if (collision.gameObject.CompareTag("pared") || collision.gameObject.CompareTag("Suelo"))

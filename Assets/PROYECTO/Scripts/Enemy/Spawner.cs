@@ -27,7 +27,7 @@ public class Spawner : MonoBehaviour
         EnemyController ec = nuevo.GetComponent<EnemyController>();
         if (ec != null)
         {
-            EnemyManager manager = FindObjectOfType<EnemyManager>();
+            EnemyManager manager = Object.FindFirstObjectByType<EnemyManager>();
             if (manager != null && manager.EsEspecial(enemyPrefab))
             {
                 ec.vida = 2;

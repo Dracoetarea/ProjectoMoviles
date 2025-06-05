@@ -35,7 +35,7 @@ public class EnemyManager : MonoBehaviour
         {
             playerSkinSwitcher.CambiarSkin();
 
-            ShootController shoot = FindObjectOfType<ShootController>();
+            ShootController shoot = Object.FindFirstObjectByType<ShootController>();
             if (shoot != null)
             {
                 shoot.CambiarSpriteDeBala();
@@ -61,7 +61,8 @@ public class EnemyManager : MonoBehaviour
         if (velocidadAcumulada < 0.15f)
         {
             velocidadAcumulada += incrementoVelocidad;
-            EnemyController[] enemigosActivos = FindObjectsOfType<EnemyController>();
+            EnemyController[] enemigosActivos = Object.FindObjectsByType<EnemyController>(FindObjectsSortMode.None);
+
 
             foreach (EnemyController enemigo in enemigosActivos)
             {
