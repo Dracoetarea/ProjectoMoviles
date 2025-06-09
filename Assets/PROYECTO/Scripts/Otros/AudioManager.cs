@@ -3,7 +3,7 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
-    public AudioSource musica;
+    public AudioSource musica; // Música de fondo
 
     private void Awake()
     {
@@ -12,6 +12,7 @@ public class AudioManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
 
+            // Cargar volumen guardado o establecer valor por defecto
             float savedVolume = PlayerPrefs.GetFloat("VolumenMusica", 0.5f);
             SetVolume(savedVolume);
         }
@@ -21,6 +22,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    // Cambia el volumen de la música y guarda el valor en PlayerPrefs
     public void SetVolume(float volume)
     {
         if (musica != null)

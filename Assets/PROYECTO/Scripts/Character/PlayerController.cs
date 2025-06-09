@@ -2,14 +2,14 @@
 
 public class PlayerController : MonoBehaviour
 {
-    public float velocidad;
-    private float inputMovimiento;
-    public bool mirandoDerecha = false; // true = derecha || false = izquierda
-    private Animator animator;
+    public float velocidad; // Velocidad de desplazamiento del jugador
+    private float inputMovimiento; // Valor de entrada horizontal (-1 a 1)
+    public bool mirandoDerecha = false; // Dirección actual del jugador
+    private Animator animator; // Controlador de animaciones
 
-    [SerializeField] private HUD hud;
+    [SerializeField] private HUD hud; // Referencia al HUD para gestionar golpes
 
-    public bool EstaQuieto => inputMovimiento == 0;
+    public bool EstaQuieto => inputMovimiento == 0; // Propiedad para saber si está quieto
 
     void Start()
     {
@@ -18,11 +18,13 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-            moverse();
-            gestionarOrientacion(inputMovimiento);
-            gestionarAnimacion(inputMovimiento);
+        moverse();
+        gestionarOrientacion(inputMovimiento);
+        gestionarAnimacion(inputMovimiento);
     }
 
+
+    // Lógica para el movimiento horizontal usando Rigidbody2D
     void moverse()
     {
         inputMovimiento = Input.GetAxis("Horizontal");
@@ -30,6 +32,7 @@ public class PlayerController : MonoBehaviour
         rigidbody.linearVelocity = new Vector2(inputMovimiento * velocidad, rigidbody.linearVelocity.y);
     }
 
+    // Cambia la orientación del personaje si cambia la dirección de movimiento
     void gestionarOrientacion(float inputMovimiento)
     {
         if ((mirandoDerecha && inputMovimiento < 0) || (!mirandoDerecha && inputMovimiento > 0))
@@ -39,6 +42,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Activa/desactiva la animación de caminar según el movimiento
     void gestionarAnimacion(float inputMovimiento)
     {
         if (inputMovimiento != 0)
@@ -52,6 +56,7 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Detecta colisiones con enemigos y comunica al HUD que se ha recibido un golpe
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Enemigo"))

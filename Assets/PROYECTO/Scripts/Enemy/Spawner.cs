@@ -8,6 +8,8 @@ public class Spawner : MonoBehaviour
 
     private bool spawnActivo = false;
 
+    // Método para iniciar el spawn de enemigos
+
     public void IniciarSpawn()
     {
         if (!spawnActivo)
@@ -17,6 +19,7 @@ public class Spawner : MonoBehaviour
         }
     }
 
+    // Método que crea un enemigo en uno de los puntos de spawn aleatoriamente
     void SpawnEnemy()
     {
         int index = Random.Range(0, spawnPoints.Length);
@@ -24,6 +27,7 @@ public class Spawner : MonoBehaviour
 
         GameObject nuevo = Instantiate(enemyPrefab, spawnPoint.position, spawnPoint.rotation);
 
+        // Instancia el enemigo en la posición y rotación del punto seleccionado
         EnemyController ec = nuevo.GetComponent<EnemyController>();
         if (ec != null)
         {
@@ -35,6 +39,7 @@ public class Spawner : MonoBehaviour
         }
     }
 
+    // Método para detener el spawn de enemigos
     public void DetenerSpawn()
     {
         CancelInvoke("SpawnEnemy");

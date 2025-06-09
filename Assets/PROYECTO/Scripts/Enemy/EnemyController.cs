@@ -1,8 +1,8 @@
 using UnityEngine;
 public class EnemyController : MonoBehaviour
 {
-    public Transform target;
-    public float speed = 5f;
+    public Transform target; // Referencia al jugador al que persigue
+    public float speed = 5f; // Velocidad base
     private CharacterLife cf;
     public bool mirandoDerecha = false;
     public Animator animator;
@@ -16,12 +16,14 @@ public class EnemyController : MonoBehaviour
         animator = GetComponent<Animator>();
         muerteAudio = GetComponent<AudioSource>();
 
+        // Ajusta velocidad y la acumula
         EnemyManager manager = Object.FindFirstObjectByType<EnemyManager>();
         if (manager != null) speed += manager.ObtenerVelocidadAcumulada();
 
         cf = (CharacterLife)FindFirstObjectByType(typeof(CharacterLife));
         if (cf == null) Debug.LogError("No se encontró CharacterLife.");
 
+        // Si no tiene target asignado, busca al jugador por tag
         if (target == null)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Jugador");
@@ -33,9 +35,11 @@ public class EnemyController : MonoBehaviour
     {
         if (cf != null && cf.jugando && target != null && !muerto)
         {
+            // Calcula dirección hacia el jugador y se mueve hacia él
             Vector3 direction = (target.position - transform.position).normalized;
             transform.position += direction * speed * Time.deltaTime;
 
+            // Cambia la orientación del sprite para que mire al jugador
             if ((target.position.x > transform.position.x && !mirandoDerecha) ||
                 (target.position.x < transform.position.x && mirandoDerecha))
             {
@@ -44,6 +48,7 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    // Invierte la escala en X para voltear el sprite
     void Flip()
     {
         mirandoDerecha = !mirandoDerecha;
@@ -66,6 +71,8 @@ public class EnemyController : MonoBehaviour
             if (animator != null) animator.SetTrigger("Hit");
         }
     }
+
+    // El enemigo recibe daño, si su vida llega a cero muere
     public void Die()
     {
         if (muerto) return;

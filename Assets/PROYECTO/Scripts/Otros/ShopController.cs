@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-using TMPro;
+﻿using TMPro;
+using UnityEngine;
 
 public class ShopController : MonoBehaviour
 {
@@ -21,23 +21,27 @@ public class ShopController : MonoBehaviour
 
     void Start()
     {
+        // Inicialmente ocultamos la UI de interacción y la tienda
         interactPrompt.SetActive(false);
         shopMenu.SetActive(false);
     }
 
     void Update()
     {
+        // Si el jugador está cerca y presiona 'E', se abre o cierra la tienda
         if (playerInRange && Input.GetKeyDown(KeyCode.E))
         {
             ToggleShop();
         }
 
+        // Si la tienda está abierta y el jugador presiona 'B', se realiza la compra de corazones
         if (shopMenu.activeSelf && Input.GetKeyDown(KeyCode.B))
         {
             BuyHearts();
         }
     }
 
+    // Método para abrir/cerrar la tienda y pausar o reanudar el juego
     void ToggleShop()
     {
         bool opening = !shopMenu.activeSelf;
@@ -54,6 +58,8 @@ public class ShopController : MonoBehaviour
             Time.timeScale = 1f;  // Reanudar al cerrar
         }
     }
+
+    // Método para comprar corazones si hay suficientes monedas
     public void BuyHearts()
     {
         int balance = CoinManager.instance.coins;
@@ -79,6 +85,7 @@ public class ShopController : MonoBehaviour
         }
     }
 
+    // Detecta cuando el jugador sale del área para ocultar la UI y cerrar tienda si estaba abierta
     void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Jugador"))

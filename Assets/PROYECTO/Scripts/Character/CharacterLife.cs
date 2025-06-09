@@ -1,7 +1,7 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using TMPro;
-using System.Collections;
 using UnityEngine.SceneManagement;
 
 public class CharacterLife : MonoBehaviour
@@ -9,6 +9,7 @@ public class CharacterLife : MonoBehaviour
     [Header("Vida")]
     public int vidaActual;
     public int vidaMaxima;
+    // Evento para actualizar la UI al cambiar la vida
     public UnityEvent<int> cambioVida;
 
     [Header("UI y Menu")]
@@ -44,6 +45,7 @@ public class CharacterLife : MonoBehaviour
         MenuMuerte.SetActive(false);
         MenuPrincipal.SetActive(true);
 
+        // Desactivamos todos los scripts menos este al iniciar
         componentesAdesactivar = GetComponents<MonoBehaviour>();
         DesactivarComponentesJuego();
 
@@ -52,12 +54,14 @@ public class CharacterLife : MonoBehaviour
             vidaActual = PlayerPrefs.GetInt("VidaActual");
         }
 
+        // Cargamos las monedas acumuladas y reiniciamos la puntuacion anterior
         CoinManager.instance?.LoadCoinsFromPrefs();
         ScoreManager.instance?.ResetScore();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        // Solo recibimos daño si el juego ha comenzado y no estamos en modo inmortal
         if (juegoIniciado && !esInvulnerable)
         {
             if (other.CompareTag("Enemigo"))
@@ -73,12 +77,14 @@ public class CharacterLife : MonoBehaviour
     {
         if (juegoIniciado)
         {
+            // Reducimos la vida, asegurándonos que no baje de 0
             int vidaTemporal = vidaActual - cantidadDaño;
             vidaActual = Mathf.Max(vidaTemporal, 0);
             cambioVida.Invoke(vidaActual);
 
             if (vidaActual <= 0)
             {
+                // Sonido y acciones tras morir
                 if (musicaFondoAudioSource != null && musicaFondoAudioSource.isPlaying)
                 {
                     musicaFondoAudioSource.Stop();
@@ -88,14 +94,13 @@ public class CharacterLife : MonoBehaviour
                 {
                     gameOverAudioSource.Play();
                 }
+                OcultarPersonaje();
                 StartCoroutine(MostrarMenuMuerte());
-                GetComponent<Renderer>().enabled = false;
-                GetComponent<Collider2D>().enabled = false;
-                GetComponent<Rigidbody2D>().simulated = false;
             }
         }
     }
 
+    // "Efecto invulnerabilidad", hace parpadear al personaje y lo vuelve invulnerable temporalmente tras recibir daño
     private IEnumerator InmortalidadTemporal()
     {
         esInvulnerable = true;
@@ -114,12 +119,12 @@ public class CharacterLife : MonoBehaviour
         }
 
         if (renderer != null)
-            renderer.enabled = true; 
+            renderer.enabled = true;
 
         esInvulnerable = false;
     }
 
-
+    // Muestra el panel de muerte, guarda estadísticas y muestra el menú correspondiente
     private IEnumerator MostrarMenuMuerte()
     {
         HasMuertoPanel.SetActive(true);
@@ -132,6 +137,8 @@ public class CharacterLife : MonoBehaviour
             puntuacionTexto.text += puntos.ToString();
             StatsManager.instance?.RegistrarPuntuacion(puntos);
         }
+
+        // Guardamos datos del jugador en Firebase
         string userUID = FirebaseManager.instance.GetUserUID();
         int coins = CoinManager.instance != null ? CoinManager.instance.GetCoins() : 0;
         int score = ScoreManager.instance != null ? ScoreManager.instance.currentScore : 0;
@@ -141,6 +148,7 @@ public class CharacterLife : MonoBehaviour
         MenuMuerte.SetActive(true);
     }
 
+    // Hace el texto de “Has Muerto” desvanecerse progresivamente
     private IEnumerator FadeOutText()
     {
         Color originalColor = HasMuertoTexto.color;
@@ -154,6 +162,7 @@ public class CharacterLife : MonoBehaviour
         }
     }
 
+    // Reinicia la escena actual y resetea la puntuación
     public void Reintentar()
     {
         juegoIniciado = false;
@@ -163,6 +172,7 @@ public class CharacterLife : MonoBehaviour
         ScoreManager.instance?.ResetScore();
     }
 
+    // Reiniciamos el personaje y volvemos al juego desde el menú de muerte
     public void SalirJuegoMuerte()
     {
         GetComponent<Renderer>().enabled = true;
@@ -175,6 +185,7 @@ public class CharacterLife : MonoBehaviour
         MenuMuerte.SetActive(false);
     }
 
+    // Comenzar partida desactivando el HUD del menu principal al darle al boton jugar, carga los componentes necesarios
     public void Jugar()
     {
         MenuPrincipal.SetActive(false);
@@ -187,6 +198,7 @@ public class CharacterLife : MonoBehaviour
         jugando = true;
     }
 
+    // Habilita el menu de opciones
     public void Opciones()
     {
         if (MenuOpciones != null)
@@ -195,11 +207,13 @@ public class CharacterLife : MonoBehaviour
         }
     }
 
+    // Cierra la aplicacion
     public void SalirJuegoPrincipal()
     {
         Application.Quit();
     }
 
+    // Desactiva scripts
     private void DesactivarComponentesJuego()
     {
         foreach (MonoBehaviour componente in componentesAdesactivar)
@@ -211,6 +225,7 @@ public class CharacterLife : MonoBehaviour
         }
     }
 
+    // Activa los scripts
     private void ActivarComponentesJuego()
     {
         foreach (MonoBehaviour componente in componentesAdesactivar)
@@ -219,6 +234,7 @@ public class CharacterLife : MonoBehaviour
         }
     }
 
+    // Añade vida y la guarda
     public void AddHearts(int amount)
     {
         vidaActual = Mathf.Min(vidaActual + amount, vidaMaxima);
@@ -226,6 +242,8 @@ public class CharacterLife : MonoBehaviour
         PlayerPrefs.Save();
         cambioVida.Invoke(vidaActual);
     }
+
+    // Cierra las opciones
     public void CerrarOpciones()
     {
         if (MenuOpciones != null)
@@ -234,6 +252,7 @@ public class CharacterLife : MonoBehaviour
         }
     }
 
+    // Muestra los disparos realizados, enemigos eliminados, y la puntuacion conseguida 
     public void MostrarStats()
     {
         if (MenuStats != null && textoStats != null)
@@ -244,6 +263,7 @@ public class CharacterLife : MonoBehaviour
         }
     }
 
+    // Cerrar las stats
     public void CerrarStats()
     {
         if (MenuStats != null)
@@ -252,4 +272,18 @@ public class CharacterLife : MonoBehaviour
         }
     }
 
+    // Ocultar el personaje
+    private void OcultarPersonaje()
+    {
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null) sr.enabled = false;
+
+        foreach (SpriteRenderer childSr in GetComponentsInChildren<SpriteRenderer>())
+        {
+            childSr.enabled = false;
+            childSr.sortingOrder = -100;
+        }
+        if (TryGetComponent<Collider2D>(out var collider)) collider.enabled = false;
+        if (TryGetComponent<Rigidbody2D>(out var rb)) rb.simulated = false;
+    }
 }

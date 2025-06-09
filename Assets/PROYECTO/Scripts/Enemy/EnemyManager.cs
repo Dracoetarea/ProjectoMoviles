@@ -1,26 +1,22 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
     private int enemigosEliminados = 0;
-    public float incrementoVelocidad = 0.05f;
+    public float incrementoVelocidad = 0.01f;
     private float velocidadAcumulada = 0f;
 
     public PlayerSkinSwitcher playerSkinSwitcher;
-    public GameObject[] enemigosEspeciales;
+    public GameObject[] enemigosEspeciales; // Enemigos especiales tienen 2 de vida
     private int dañoBala = 1;
-    private bool vidaAumentada = false;
 
-    public GameObject enemigoEspecialPrefab;
+    public GameObject enemigoEspecialPrefab; // Prefab del boss
     public Transform puntoAparicionEspecial;
     private bool enemigoEspecialInstanciado = false;
-    [SerializeField] private GameObject[] spawnersADesactivar;
+    [SerializeField] private GameObject[] spawnersADesactivar; // Spawners que se desactivan cuando aparece un boss
 
-    void Start()
-    {
-    }
-
+    // Ejecuta ciertas funciones al matar un enemigo
     public void EnemigoEliminado()
     {
         StatsManager.instance?.RegistrarEnemigoEliminado();
@@ -56,6 +52,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    // Incrementa la velocidad de todos los enemigos activos si no supera un máximo
     public void AumentarVelocidadEnemigos()
     {
         if (velocidadAcumulada < 0.15f)
@@ -71,11 +68,13 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    // Devuelve la velocidad acumulada
     public float ObtenerVelocidadAcumulada()
     {
         return velocidadAcumulada;
     }
 
+    // Comprueba si un enemigo pertenece a la lista de especiales
     public bool EsEspecial(GameObject prefab)
     {
         foreach (GameObject especial in enemigosEspeciales)
@@ -86,16 +85,19 @@ public class EnemyManager : MonoBehaviour
         return false;
     }
 
+    // Cambia el daño que hacen las balas del jugador, se activa al matar ciertos enemigos
     public void AumentarDaño()
     {
         dañoBala = 2;
     }
 
+    // Devuelve el daño de la bala
     public int ObtenerDaño()
     {
         return dañoBala;
     }
 
+    // Instancia un enemigo especial tipo jefe y detiene algunos spawners
     private void InstanciarEnemigoEspecial()
     {
         if (enemigoEspecialPrefab != null && puntoAparicionEspecial != null)
@@ -113,6 +115,7 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    // Detiene los spawners normales temporalmente
     private void DesactivarSpawners()
     {
         foreach (GameObject spawner in spawnersADesactivar)
@@ -132,9 +135,10 @@ public class EnemyManager : MonoBehaviour
         StartCoroutine(ReactivarSpawners());
     }
 
+    // Reactiva los spawners después de unos segundos
     private IEnumerator ReactivarSpawners()
     {
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(4f);
 
         foreach (GameObject spawner in spawnersADesactivar)
         {

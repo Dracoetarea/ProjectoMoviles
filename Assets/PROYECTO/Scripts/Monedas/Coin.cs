@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Coin : MonoBehaviour
 {
-    private bool isCollected = false;
+    private bool isCollected = false; // Evita recoger varias veces la misma moneda
 
     public AudioClip coinSound;
     private AudioSource audioSource;
@@ -14,8 +14,10 @@ public class Coin : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        // Si la moneda ya fue recogida, no hacer nada
         if (isCollected) return;
 
+        // Detecta si el objeto que colisiona tiene el Tag "Jugador"
         if (collision.CompareTag("Jugador"))
         {
             isCollected = true;
@@ -25,7 +27,9 @@ public class Coin : MonoBehaviour
                 audioSource.PlayOneShot(coinSound);
             }
 
+            // Suma una moneda al CoinManager
             CoinManager.instance.AddCoin();
+            // Destruye el objeto moneda después de que termine el sonido
             Destroy(gameObject, coinSound != null ? coinSound.length : 0f);
         }
     }

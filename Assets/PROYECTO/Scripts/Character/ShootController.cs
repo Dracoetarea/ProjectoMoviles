@@ -1,20 +1,20 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
 public class ShootController : MonoBehaviour
 {
     [Header("Disparo")]
     public GameObject bulletPrefab;
     public Transform shootPoint;
-    public float shootCooldown = 0.5f;
-    private float nextFireTime = 0f;
+    public float shootCooldown = 0.5f; // Tiempo entre disparos
+    private float nextFireTime = 0f; // Control del tiempo para el próximo disparo
 
     private CharacterLife vidaPersonaje;
     private Animator animator;
     private PlayerController controlJugador;
 
     [Header("Sprites")]
-    public Sprite nuevoSpriteBala;
+    public Sprite nuevoSpriteBala; // Sprite alternativo para la bala
     private bool spriteCambiado = false;
 
     public AudioSource audioSource;
@@ -34,6 +34,7 @@ public class ShootController : MonoBehaviour
 
     void Update()
     {
+        // Comprobamos si el jugador puede disparar
         if (Time.time >= nextFireTime && Input.GetButtonDown("Fire1") && vidaPersonaje.vidaActual > 0)
         {
             Fire();
@@ -41,6 +42,7 @@ public class ShootController : MonoBehaviour
         }
     }
 
+    // Método que ejecuta el disparo
     private void Fire()
     {
         GameObject bullet = Instantiate(bulletPrefab, shootPoint.position, shootPoint.rotation);
@@ -72,6 +74,7 @@ public class ShootController : MonoBehaviour
         }
     }
 
+    // Espera para desactivar la animación de disparo
     IEnumerator ResetDisparo()
     {
         yield return new WaitForSeconds(0.5f);
@@ -81,6 +84,7 @@ public class ShootController : MonoBehaviour
         }
     }
 
+    // Activa otra skin para la bala
     public void CambiarSpriteDeBala()
     {
         spriteCambiado = true;

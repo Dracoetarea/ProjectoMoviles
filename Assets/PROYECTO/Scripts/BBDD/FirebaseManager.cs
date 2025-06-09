@@ -1,18 +1,18 @@
 ﻿using Firebase;
+using Firebase.Auth;
 using Firebase.Database;
 using Firebase.Extensions;
 using UnityEngine;
-using Firebase.Auth;
 
 public class FirebaseManager : MonoBehaviour
 {
     public static FirebaseManager instance;
     private DatabaseReference reference;
     private FirebaseAuth auth;
-
     public string email;
     public string password;
 
+    // Clase para guardar los datos del jugador en la base de datos
     [System.Serializable]
     public class PlayerData
     {
@@ -22,6 +22,7 @@ public class FirebaseManager : MonoBehaviour
 
     void Start()
     {
+        // comprobacion para que no se duplique al cambiar de escena
         if (instance == null)
         {
             instance = this;
@@ -36,6 +37,7 @@ public class FirebaseManager : MonoBehaviour
 
     void InitializeFirebaseAsync()
     {
+        // inicializacion de Firebase de forma asíncrona
         FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
         {
             var dependencyStatus = task.Result;
@@ -54,6 +56,7 @@ public class FirebaseManager : MonoBehaviour
         });
     }
 
+    // Guarda las estadísticas del jugador en la base de datos
     public void SavePlayerStats(string userId, int coins, int score)
     {
         var playerData = new PlayerData()
@@ -65,9 +68,11 @@ public class FirebaseManager : MonoBehaviour
         reference.Child("players").Child(userId).SetRawJsonValueAsync(json);
     }
 
+    // Crea un nuevo usuario en Firebase usando email y contraseña
     public void createUser()
     {
-        auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task => {
+        auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
+        {
             if (task.IsCanceled)
             {
                 Debug.LogError("Registro cancelado.");
@@ -86,9 +91,11 @@ public class FirebaseManager : MonoBehaviour
         });
     }
 
-    public void loginUser()
+    // Inicia sesión con los datos proporcionados
+    public void loginUser(System.Action onSuccess = null)
     {
-        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task => {
+        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
+        {
             if (task.IsCanceled)
             {
                 Debug.LogError("Logeo cancelado.");
@@ -103,9 +110,10 @@ public class FirebaseManager : MonoBehaviour
             Firebase.Auth.AuthResult result = task.Result;
             Debug.LogFormat("Usuario Logeado correctamente: {0} ({1})",
                 result.User.DisplayName, result.User.UserId);
-
         });
     }
+
+    // Devuelve el UID del usuario actualmente logueado
     public string GetUserUID()
     {
         var user = Firebase.Auth.FirebaseAuth.DefaultInstance.CurrentUser;

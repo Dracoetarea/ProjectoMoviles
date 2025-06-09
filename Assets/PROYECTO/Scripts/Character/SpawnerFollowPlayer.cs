@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class SpawnerFollowPlayer : MonoBehaviour
 {
-    public Transform player;          // Referencia al transform del jugador
-    public Vector3 offset;         // Distancia deseada entre el jugador y el spawner
+    public Transform player; // Referencia al transform del jugador
+    public Vector3 offset; // Distancia deseada entre el jugador y el spawner
 
     void Update()
     {

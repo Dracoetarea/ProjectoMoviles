@@ -34,18 +34,7 @@ public class CorazonesUI : MonoBehaviour
         CambiarVida(vidaActual);
     }
 
-
-
-    private void CrearCorazones(int cantidadVidaMaxima)
-    {
-
-        for (int i = 0; i < cantidadVidaMaxima; i++) { 
-            GameObject corazon = Instantiate(corazonPrefab, transform);
-
-            listaCorazones.Add(corazon.GetComponent<Image>());
-        }
-        indexActual = cantidadVidaMaxima - 1;
-    }
+    // Hace el cambio de imagen para los corazones
     private void CambiarVida(int vidaActual)
     {
         for (int i = 0; i < listaCorazones.Count; i++)
@@ -53,36 +42,6 @@ public class CorazonesUI : MonoBehaviour
             if (i < vidaActual)
             {
                 listaCorazones[i].sprite = corazonLleno;
-            }
-            else
-            {
-                listaCorazones[i].sprite = corazonVacio;
-            }
-        }
-    }
-
-
-
-    private void agregarCorazon(int vidaActual)
-    {
-        for (int i = 0; i < listaCorazones.Count; i++)
-        {
-            if (i < vidaActual)
-            {
-                listaCorazones[i].sprite = corazonLleno; 
-            }
-            else
-            {
-                listaCorazones[i].sprite = corazonVacio;
-            }
-        }
-    }
-    private void quitarCorazon(int vidaActual)
-    {
-        for (int i = 0; i < listaCorazones.Count; i++) {
-            if (i < vidaActual)
-            {
-                listaCorazones[i].sprite = corazonLleno; 
             }
             else
             {

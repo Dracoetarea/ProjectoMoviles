@@ -4,9 +4,9 @@ public class StatsManager : MonoBehaviour
 {
     public static StatsManager instance;
 
-    public int disparosRealizados;
-    public int enemigosEliminados;
-    public int puntuacionMaxima;
+    public int disparosRealizados; // Total disparos
+    public int enemigosEliminados; // Total enemigos muertos
+    public int puntuacionMaxima; // Puntuacion Total
 
     private void Awake()
     {
@@ -14,6 +14,8 @@ public class StatsManager : MonoBehaviour
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // Carga las estadísticas almacenadas en PlayerPrefs al iniciar
             CargarStats();
         }
         else
@@ -22,18 +24,21 @@ public class StatsManager : MonoBehaviour
         }
     }
 
+    // Metodo para guardar los disparos realizados
     public void RegistrarDisparo()
     {
         disparosRealizados++;
         GuardarStats();
     }
 
+    // Metodo para guardar los enemigos eliminados
     public void RegistrarEnemigoEliminado()
     {
         enemigosEliminados++;
         GuardarStats();
     }
 
+    // Metodo para guardar la puntuacion conseguida
     public void RegistrarPuntuacion(int score)
     {
         if (score > puntuacionMaxima)
@@ -43,6 +48,7 @@ public class StatsManager : MonoBehaviour
         }
     }
 
+    // Guarda las estadisticas actuales en PlayerPrefs
     public void GuardarStats()
     {
         PlayerPrefs.SetInt("Disparos", disparosRealizados);
@@ -51,6 +57,7 @@ public class StatsManager : MonoBehaviour
         PlayerPrefs.Save();
     }
 
+    // Carga las estadisticas desde PlayerPrefs
     public void CargarStats()
     {
         disparosRealizados = PlayerPrefs.GetInt("Disparos", 0);
