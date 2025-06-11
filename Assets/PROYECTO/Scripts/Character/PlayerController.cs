@@ -6,11 +6,17 @@ public class PlayerController : MonoBehaviour
     private float inputMovimiento; // Valor de entrada horizontal (-1 a 1)
     public bool mirandoDerecha = false; // Dirección actual del jugador
     private Animator animator; // Controlador de animaciones
+    private float inputTactil = 0f;
 
     [SerializeField] private HUD hud; // Referencia al HUD para gestionar golpes
 
     public bool EstaQuieto => inputMovimiento == 0; // Propiedad para saber si está quieto
 
+#if UNITY_ANDROID
+    public void MoverIzquierda() => inputTactil = -1f;
+    public void MoverDerecha() => inputTactil = 1f;
+    public void DetenerMovimiento() => inputTactil = 0f;
+#endif
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -24,10 +30,14 @@ public class PlayerController : MonoBehaviour
     }
 
 
-    // Lógica para el movimiento horizontal usando Rigidbody2D
+    // Lógica para el movimiento horizontal usando Rigidbody2D y logica para Android
     void moverse()
     {
+#if UNITY_ANDROID
+        inputMovimiento = inputTactil;
+#else
         inputMovimiento = Input.GetAxis("Horizontal");
+#endif
         Rigidbody2D rigidbody = GetComponent<Rigidbody2D>();
         rigidbody.linearVelocity = new Vector2(inputMovimiento * velocidad, rigidbody.linearVelocity.y);
     }

@@ -21,9 +21,13 @@ public class CharacterLife : MonoBehaviour
     public GameObject imagen1;
     public GameObject imagen2;
     public TextMeshProUGUI puntuacionTexto;
+    private bool juegoPausado = false;
 
     [Header("Inmortalidad")]
     public float duracionInmortalidad = 1f;
+
+    [Header("UI Android")]
+    public GameObject UITactilAndroid;
 
     [Header("Otros")]
     public bool jugando = false;
@@ -41,6 +45,13 @@ public class CharacterLife : MonoBehaviour
 
     void Start()
     {
+
+#if UNITY_ANDROID
+        UITactilAndroid.SetActive(true);
+#else
+        UITactilAndroid.SetActive(false);
+#endif
+
         HasMuertoPanel.SetActive(false);
         MenuMuerte.SetActive(false);
         MenuPrincipal.SetActive(true);
@@ -57,6 +68,15 @@ public class CharacterLife : MonoBehaviour
         // Cargamos las monedas acumuladas y reiniciamos la puntuacion anterior
         CoinManager.instance?.LoadCoinsFromPrefs();
         ScoreManager.instance?.ResetScore();
+    }
+
+    void Update()
+    {
+        // Pausar/Reanudar con ESC si el juego ha comenzado y el jugador está vivo
+        if (juegoIniciado && Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePausa();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -129,24 +149,26 @@ public class CharacterLife : MonoBehaviour
     {
         HasMuertoPanel.SetActive(true);
         StartCoroutine(FadeOutText());
+
         yield return new WaitForSeconds(fadeDuration);
+
         HasMuertoPanel.SetActive(false);
+
+        int puntos = ScoreManager.instance != null ? ScoreManager.instance.currentScore : 0;
         if (puntuacionTexto != null)
         {
-            int puntos = ScoreManager.instance != null ? ScoreManager.instance.currentScore : 0;
-            puntuacionTexto.text += puntos.ToString();
-            StatsManager.instance?.RegistrarPuntuacion(puntos);
+            puntuacionTexto.text = "PUNTOS: " + puntos.ToString();
         }
+        MenuMuerte.SetActive(true);
 
-        // Guardamos datos del jugador en Firebase
+        // Guardar datos en segundo plano (sin bloquear el menú)
         string userUID = FirebaseManager.instance.GetUserUID();
         int coins = CoinManager.instance != null ? CoinManager.instance.GetCoins() : 0;
-        int score = ScoreManager.instance != null ? ScoreManager.instance.currentScore : 0;
-        Debug.Log($"Guardando stats en Firebase: {userUID}, {coins}, {score}");
 
-        FirebaseManager.instance.SavePlayerStats(userUID, coins, score);
-        MenuMuerte.SetActive(true);
+        Debug.Log($"Guardando stats en Firebase: {userUID}, {coins}, {puntos}");
+        FirebaseManager.instance.SavePlayerStats(userUID, coins, puntos);
     }
+
 
     // Hace el texto de “Has Muerto” desvanecerse progresivamente
     private IEnumerator FadeOutText()
@@ -285,5 +307,24 @@ public class CharacterLife : MonoBehaviour
         }
         if (TryGetComponent<Collider2D>(out var collider)) collider.enabled = false;
         if (TryGetComponent<Rigidbody2D>(out var rb)) rb.simulated = false;
+    }
+    void TogglePausa()
+    {
+        juegoPausado = !juegoPausado;
+
+        if (juegoPausado)
+        {
+            Time.timeScale = 0f;
+            if (MenuOpciones != null)
+                // Mostrar menu
+                MenuOpciones.SetActive(true);
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            if (MenuOpciones != null)
+                // Ocultar Menu
+                MenuOpciones.SetActive(false);
+        }
     }
 }

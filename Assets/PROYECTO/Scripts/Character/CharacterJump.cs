@@ -11,20 +11,39 @@ public class CharacterJump : MonoBehaviour
 
     void Update()
     {
-        // Detecta si se pulsa espacio y el personaje está en el suelo
+        // PC
+#if !UNITY_ANDROID
         if (Input.GetKeyDown(KeyCode.Space) && enSuelo)
         {
-            rbd.AddForce(Vector2.up * fuerza, ForceMode2D.Impulse);
-
-            // Reproducimos el sonido del salto
-            if (audioSource != null && saltoClip != null)
-            {
-                audioSource.PlayOneShot(saltoClip);
-            }
-
-            enSuelo = false;
-            animator.SetBool("isJumping", true);
+            RealizarSalto();
         }
+#endif
+    }
+
+    // Android
+    public void Saltar()
+    {
+#if UNITY_ANDROID
+        if (enSuelo)
+        {
+            RealizarSalto();
+        }
+#endif
+    }
+
+    // PC
+    private void RealizarSalto()
+    {
+        rbd.AddForce(Vector2.up * fuerza, ForceMode2D.Impulse);
+
+        if (audioSource != null && saltoClip != null)
+        {
+            audioSource.PlayOneShot(saltoClip);
+        }
+
+        enSuelo = false;
+        if (animator != null)
+            animator.SetBool("isJumping", true);
     }
 
     // Detectamos cuándo el personaje toca el suelo

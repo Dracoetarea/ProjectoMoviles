@@ -92,13 +92,14 @@ public class FirebaseManager : MonoBehaviour
     }
 
     // Inicia sesión con los datos proporcionados
-    public void loginUser(System.Action onSuccess = null)
+    public void loginUser(System.Action<bool> onComplete = null)
     {
         auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>
         {
             if (task.IsCanceled)
             {
-                Debug.LogError("Logeo cancelado.");
+                Debug.LogError("Error al logearse: " + (task.Exception != null ? task.Exception.ToString() : "Cancelado"));
+                onComplete?.Invoke(false);
                 return;
             }
             if (task.IsFaulted)
@@ -110,6 +111,7 @@ public class FirebaseManager : MonoBehaviour
             Firebase.Auth.AuthResult result = task.Result;
             Debug.LogFormat("Usuario Logeado correctamente: {0} ({1})",
                 result.User.DisplayName, result.User.UserId);
+            onComplete?.Invoke(true);
         });
     }
 
