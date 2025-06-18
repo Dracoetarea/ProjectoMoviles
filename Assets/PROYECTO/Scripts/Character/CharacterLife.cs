@@ -155,6 +155,7 @@ public class CharacterLife : MonoBehaviour
         HasMuertoPanel.SetActive(false);
 
         int puntos = ScoreManager.instance != null ? ScoreManager.instance.currentScore : 0;
+        StatsManager.instance?.RegistrarPuntuacion(puntos);
         if (puntuacionTexto != null)
         {
             puntuacionTexto.text = "PUNTOS: " + puntos.ToString();
@@ -309,7 +310,7 @@ public class CharacterLife : MonoBehaviour
         if (TryGetComponent<Rigidbody2D>(out var rb)) rb.simulated = false;
     }
     void TogglePausa()
-    {
+    {   
         juegoPausado = !juegoPausado;
 
         if (juegoPausado)

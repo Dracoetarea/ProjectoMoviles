@@ -1,5 +1,7 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class CoinManager : MonoBehaviour
 {
@@ -28,6 +30,7 @@ public class CoinManager : MonoBehaviour
         }
 
         LoadCoinsFromPrefs(); // Carga las monedas guardadas en prefs
+        UpdateCoinUI();
     }
 
     // Incrementa el contador de monedas
@@ -82,5 +85,29 @@ public class CoinManager : MonoBehaviour
     public int GetCoins()
     {
         return coins;
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Vuelve a buscar el CoinCounter después de cargar la nueva escena
+        if (coinText == null)
+        {
+            GameObject go = GameObject.Find("CoinCounter");
+            if (go != null)
+            {
+                coinText = go.GetComponent<TextMeshProUGUI>();
+                UpdateCoinUI();
+            }
+        }
     }
 }

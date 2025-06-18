@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class AudioManager : MonoBehaviour
 {
@@ -30,6 +31,29 @@ public class AudioManager : MonoBehaviour
             musica.volume = volume;
             PlayerPrefs.SetFloat("VolumenMusica", volume);
             PlayerPrefs.Save();
+        }
+    }
+
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (musica == null)
+        {
+            musica = GetComponent<AudioSource>();
+        }
+
+        if (musica != null && !musica.isPlaying)
+        {
+            musica.Play();
         }
     }
 }
